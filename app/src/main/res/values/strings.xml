@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NY Times Sample</string>
+    <string name="error_dialog_message">Ooops, something went wrong!</string>
+    <string name="error_dialog_positive_button">OK</string>
+</resources>

@@ -1,0 +1,118 @@
+apply plugin: 'com.android.application'
+
+def keystorePropsFile = rootProject.file("keystore.properties")
+def keystoreProps = new Properties()
+keystoreProps.load(new FileInputStream(keystorePropsFile))
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "27.0.2"
+    defaultConfig {
+        applicationId "io.davidkisida.nytimessample"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ['resourcePackageName': android.defaultConfig.applicationId,
+                             'classSuffix'        : "Impl"]
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        mock {
+            dimension "default"
+            applicationIdSuffix ".mock"
+        }
+
+        integration {
+            dimension "default"
+            applicationIdSuffix ".integration"
+
+            buildConfigField "String", "BASE_URL", "\"https://api.nytimes.com/svc/mostpopular/v2/\""
+            buildConfigField "String", "API_KEY", "\"131332b3ad01483e8f73e0c8ce563e49\""
+        }
+    }
+
+    signingConfigs {
+        signingKey {
+            storeFile file(keystoreProps['storeFile'])
+            storePassword keystoreProps['storePassword']
+            keyAlias keystoreProps['keyAlias']
+            keyPassword keystoreProps['keyPassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.signingKey
+        }
+    }
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE'
+    }
+}
+
+def supportVersion = "27.0.2"
+def rxJavaVersion = "2.1.9"
+def rxAndroidVersion = "2.0.1"
+def rxLifecycleVersion = "2.2.0"
+def daggerVersion = "2.14.1"
+def androidAnnotationsVersion = "4.4.0"
+def timberVersion = "4.6.0"
+def glideVersion = "4.4.0"
+def okHttpVersion = "3.6.0"
+def retrofitVersion = "2.3.0"
+def parcelerVersion = "1.1.10"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation ("com.android.support:appcompat-v7:${supportVersion}") { force = true }
+    implementation ("com.android.support:design:${supportVersion}") { force = true }
+    implementation ("com.android.support:support-v4:${supportVersion}") { force = true }
+    implementation ("com.android.support:recyclerview-v7:${supportVersion}") { force = true }
+
+    implementation "io.reactivex.rxjava2:rxjava:${rxJavaVersion}"
+    implementation "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}"
+    implementation "com.trello.rxlifecycle2:rxlifecycle:${rxLifecycleVersion}"
+    implementation "com.trello.rxlifecycle2:rxlifecycle-android:${rxLifecycleVersion}"
+    implementation "com.trello.rxlifecycle2:rxlifecycle-components:${rxLifecycleVersion}"
+
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android:${daggerVersion}"
+    implementation "com.google.dagger:dagger-android-support:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-android-processor:${daggerVersion}"
+    annotationProcessor "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    annotationProcessor "org.androidannotations:androidannotations:$androidAnnotationsVersion"
+    implementation "org.androidannotations:androidannotations-api:$androidAnnotationsVersion"
+
+    implementation "com.jakewharton.timber:timber:${timberVersion}"
+
+    implementation "com.github.bumptech.glide:glide:${glideVersion}"
+    integrationImplementation "com.github.bumptech.glide:okhttp3-integration:${glideVersion}"
+
+    integrationImplementation "com.squareup.okhttp3:okhttp:${okHttpVersion}"
+    integrationImplementation "com.squareup.okhttp3:logging-interceptor:${okHttpVersion}"
+    integrationImplementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    integrationImplementation "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
+    integrationImplementation "com.squareup.retrofit2:converter-jackson:${retrofitVersion}"
+
+    compile "org.parceler:parceler-api:${parcelerVersion}"
+    annotationProcessor "org.parceler:parceler:${parcelerVersion}"
+
+    compile 'com.yqritc:recyclerview-flexibledivider:1.4.0'
+}
